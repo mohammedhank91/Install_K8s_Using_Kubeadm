@@ -97,7 +97,7 @@ sudo systemctl restart docker
 sudo systemctl enable docker
 ```
 
-### Install cri-dockerd
+## Step 5:  Install cri-dockerd
 ### Debian based systems ###
 ```bash
 sudo apt update
@@ -150,7 +150,7 @@ Mar 10 10:02:13 rocky8.mylab.io systemd[1]: Starting CRI Docker Socket for the A
 Mar 10 10:02:13 rocky8.mylab.io systemd[1]: Listening on CRI Docker Socket for the API.
 ```
 
-## Step 5: Initialize master node
+## Step 6: Initialize master node
 Login to the server to be used as master and make sure that the br_netfilter module is loaded:
 ```bash 
 $ lsmod | grep br_netfilter
@@ -199,6 +199,46 @@ Check cluster status:
 ```bash
 kubectl cluster-info
 ```
+
+## Step 7:Install Calico
+Install the Tigera Calico operator and custom resource definitions.
+```bash
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
+```
+Install Calico by creating the necessary custom resource
+```bash
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml
+```
+
+Confirm that all of the pods are running with the following command.
+```bash
+watch kubectl get pods -A
+```
+Wait until each pod has the **STATUS** of **Running**.
+
+**NOTE**
+The Tigera operator installs resources in the calico-system namespace. Other install methods may use the kube-system namespace instead.
+Remove the taints on the control plane so that you can schedule pods on it.
+```bash
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+It should return the following.
+```
+node/<your-hostname> untainted
+```
+Confirm that you now have a node in your cluster with the following command.
+```
+kubectl get nodes -o wide
+```
+It should return something like the following.
+```
+NAME              STATUS   ROLES    AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION    CONTAINER-RUNTIME
+<your-hostname>   Ready    master   52m   v1.12.2   10.128.0.28   <none>        Ubuntu 18.04.1 LTS   4.15.0-1023-gcp   docker://18.6.1
+```
+
+**Congratulations! You now have a single-host Kubernetes cluster with Calico.**
+
 ## License
 ![Logo](https://i.ibb.co/hfVvghB/image-2023-09-16-174427188.png)
 
