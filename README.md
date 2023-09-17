@@ -239,6 +239,56 @@ NAME              STATUS   ROLES    AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   
 
 **Congratulations! You now have a single-host Kubernetes cluster with Calico.**
 
+## Clean Up
+
+If you used disposable servers for your cluster, for testing, you can switch those off and do no further clean up. You can use kubectl config delete-cluster to delete your local references to the cluster.
+
+However, if you want to deprovision your cluster more cleanly, you should first drain the node and make sure that the node is empty, then deconfigure the node.
+
+### Remove the node
+Talking to the control-plane node with the appropriate credentials, run:
+```bash
+kubectl drain <node name> --delete-emptydir-data --force --ignore-daemonsets
+```
+
+Before removing the node, reset the state installed by kubeadm:
+```bash
+kubeadm reset
+```
+The reset process does not reset or clean up iptables rules or IPVS tables. If you wish to reset iptables, you must do so manually:
+```bash
+iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X
+```
+
+If you want to reset the IPVS tables, you must run the following command:
+```bash
+ipvsadm -C
+```
+Now remove the node:
+```bash 
+kubectl delete node <node name>
+```
+If you wish to start over, run **kubeadm init** or **kubeadm join** with the appropriate arguments
+
+# Troubleshooting
+
+### Pod errors due to “too many open files” 
+This may be caused by running out of inotify resources. Resource limits are defined by fs.inotify.max_user_watches and fs.inotify.max_user_instances system variables. For example, in Ubuntu these default to 8192 and 128 respectively, which is not enough to create a cluster with many nodes.
+
+To increase these limits temporarily run the following commands on the host:
+
+```bash
+sudo sysctl fs.inotify.max_user_watches=524288
+sudo sysctl fs.inotify.max_user_instances=512
+```
+To make the changes persistent, edit the file /etc/sysctl.conf and add these lines:
+```bash
+fs.inotify.max_user_watches = 524288
+fs.inotify.max_user_instances = 512
+```
+
+
+
 ## License
 ![Logo](https://i.ibb.co/hfVvghB/image-2023-09-16-174427188.png)
 
