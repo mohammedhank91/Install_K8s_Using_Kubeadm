@@ -164,18 +164,6 @@ sudo systemctl enable kubelet
 
 We now want to initialize the machine that will run the control plane components which includes etcd (the cluster database) and the API Server.
 
-Pull container images:
-```bash
-$ sudo kubeadm config images pull
-[config/images] Pulled registry.k8s.io/kube-apiserver:v1.27.2
-[config/images] Pulled registry.k8s.io/kube-controller-manager:v1.27.2
-[config/images] Pulled registry.k8s.io/kube-scheduler:v1.27.2
-[config/images] Pulled registry.k8s.io/kube-proxy:v1.27.2
-[config/images] Pulled registry.k8s.io/pause:3.9
-[config/images] Pulled registry.k8s.io/etcd:3.5.7-0
-[config/images] Pulled registry.k8s.io/coredns/coredns:v1.10.1
-```
-
 These are the basic kubeadm init options that are used to bootstrap cluster.
 - --control-plane-endpoint :  set the shared endpoint for all control-plane nodes. Can be DNS/IP
 - --pod-network-cidr : Used to set a Pod network add-on CIDR
@@ -187,7 +175,7 @@ As a regular user with sudo privileges, open a terminal on the host that you ins
 Initialize the control plane using the following command.
 ```bash
 sudo sysctl -p
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --cri-socket=unix:///var/run/cri-dockerd.sock
 ```
 Configure kubectl using commands in the output:
 ```bash
