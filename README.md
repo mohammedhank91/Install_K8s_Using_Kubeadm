@@ -269,7 +269,7 @@ To increase these limits temporarily run the following commands on the host:
 sudo sysctl fs.inotify.max_user_watches=524288
 sudo sysctl fs.inotify.max_user_instances=512
 ```
-To make the changes persistent, edit the file /etc/sysctl.conf and add these lines:
+To make the changes persistent, edit the file **/etc/sysctl.conf** and add these lines:
 ```bash
 fs.inotify.max_user_watches = 524288
 fs.inotify.max_user_instances = 512
