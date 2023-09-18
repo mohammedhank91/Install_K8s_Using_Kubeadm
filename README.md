@@ -1,6 +1,6 @@
 # Installing Kubernetes on Ubuntu 20.04 using kubeadm
 
-This guide provides step-by-step instructions for setting up a Kubernetes cluster on Ubuntu 20.04 using `kubeadm`. Kubernetes is a powerful container orchestration platform for managing containerized applications.
+This guide provides step-by-step instructions for setting up a Kubernetes cluster on Ubuntu using `kubeadm`. Kubernetes is a powerful container orchestration platform for managing containerized applications.
 
 ## Step 1: Install Kubernetes Servers
 
